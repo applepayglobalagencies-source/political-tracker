@@ -1,19 +1,47 @@
-﻿"use client";
-import { useState, useEffect } from "react";
-import { AreaChart, Area, ResponsiveContainer, XAxis, Tooltip } from "recharts";
-const data = [{m:"Jan",r:42},{m:"Feb",r:44},{m:"Mar",r:48},{m:"Apr",r:46},{m:"May",r:51},{m:"Jun",r:55}];
+"use client";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
+import Link from "next/link";
+
 export default function Home(){
-  const [open,setOpen]=useState(false); const [user,setUser]=useState<any>(null);
-  useEffect(()=>{const s=localStorage.getItem("pt_session"); if(s) setUser(JSON.parse(s));},[]);
-  return (<main className="min-h-screen bg-[#050508] text-white overflow-hidden relative selection:bg-white selection:text-black">
-    <div className="pointer-events-none absolute inset-0"><div className="absolute -top-[300px] left-1/2 -translate-x-1/2 h-[800px] w-[1200px] bg-gradient-to-b from-[#CE1126]/20 via-[#008C51]/15 to-transparent blur-[120px] rounded-full"/><div className="absolute top-0 right-0 h-[600px] w-[600px] bg-white/[0.04] blur-[100px] rounded-full"/></div>
-    <nav className="relative z-50 border-b border-white/[0.06] bg-black/40 backdrop-blur-2xl"><div className="mx-auto max-w-[1400px] px-8 h-[72px] flex items-center justify-between"><div className="flex items-center gap-4"><div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#CE1126] to-[#008C51] grid place-items-center font-black shadow-[0_0_20px_rgba(0,140,81,0.5)]">K</div><div><p className="font-black tracking-tighter leading-none">POLITICAL TRACKER</p><p className="text-[10px] tracking-[0.3em] text-white/40">KENYA • EST 2026</p></div><span className="hidden md:flex ml-6 items-center gap-2 bg-white/[0.06] border border-white/10 px-3 py-1 rounded-full text-[10px] tracking-widest"><span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"/>47 COUNTIES LIVE</span></div><div className="flex gap-3">{user?<a href="/dashboard" className="h-11 px-7 bg-white text-black rounded-full font-black text-sm shadow-[0_0_30px_rgba(255,255,255,0.3)]">Dashboard →</a>:<><a href="/login" className="hidden md:grid h-11 px-6 place-items-center rounded-full bg-white/5 border border-white/10 font-bold text-sm">Login</a><button onClick={()=>setOpen(true)} className="h-11 px-7 bg-white text-black rounded-full font-black text-sm hover:scale-[1.02] transition">Get Started</button></>}</div></div></nav>
+  const [users,setUsers]=useState<any[]>([]);
+  const [q,setQ]=useState("");
+  useEffect(()=>{ (async()=>{ const {data}=await supabase.from("politicians").select("*").order("created_at",{ascending:false}); setUsers(data||[]); })(); },[]);
+  const featured = users.filter(u=>u.tier==="featured" && u.verified);
+  const verified = users.filter(u=>u.tier==="verified" && u.verified);
+  const free = users.filter(u=>u.tier==="free" ||!u.verified);
+  const filtered = users.filter(u => (u.name||"").toLowerCase().includes(q.toLowerCase()) || (u.county||"").toLowerCase().includes(q.toLowerCase()));
 
-    <section className="relative z-10 mx-auto max-w-[1400px] px-8 pt-16 lg:pt-24 grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-start">
-      <div><div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#CE1126]/20 to-[#008C51]/20 border border-white/10 px-4 py-2 text-[11px] tracking-widest"><span>🇰🇪</span> REAL-TIME 2027 ELECTION INTELLIGENCE</div><h1 className="mt-8 text-[64px] lg:text-[96px] font-[900] tracking-[-0.06em] leading-[0.85]">Power is <br/><span className="bg-gradient-to-r from-white via-white/40 to-white/10 bg-clip-text text-transparent">a signal.</span><br/><span className="text-[42px] lg:text-[56px] tracking-tighter font-light text-white/30">We track it.</span></h1><p className="mt-8 text-[19px] leading-8 text-white/40 max-w-[560px]">Not polls. Not rumours. Live sentiment from 47 counties, 290 constituencies, and millions of conversations. Built for those who win.</p><div className="mt-10 flex flex-wrap gap-4"><a href="/register" className="group h-[56px] px-8 rounded-full bg-white text-black font-black text-[15px] flex items-center gap-3 shadow-[0_0_40px_rgba(255,255,255,0.25)] hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] transition">Claim Politician Profile <span className="h-7 w-7 rounded-full bg-black text-white grid place-items-center group-hover:translate-x-1 transition">→</span></a><a href="#live" className="h-[56px] px-8 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-xl font-bold grid place-items-center hover:bg-white/[0.1] transition">Watch Live Data ↓</a></div><div className="mt-14 flex gap-8 border-t border-white/[0.06] pt-8 max-w-[480px]"><div><p className="text-3xl font-black">12.4k</p><p className="text-[11px] tracking-widest text-white/30 mt-1">VERIFIED POLITICIANS</p></div><div className="w-px bg-white/10"/><div><p className="text-3xl font-black">2.1M</p><p className="text-[11px] tracking-widest text-white/30 mt-1">SIGNALS / DAY</p></div><div className="w-px bg-white/10"/><div><p className="text-3xl font-black">99.9%</p><p className="text-[11px] tracking-widest text-white/30 mt-1">ACCURACY</p></div></div></div>
+  return (
+    <main className="min-h-screen bg-[#050507] text-white">
+      <header className="max-w-[1200px] mx-auto px-8 py-6 flex justify-between items-center"><div className="font-black tracking-tight text-[18px]">POLITICAL TRACKER<span className="text-white/30">.KE</span></div><div className="flex gap-2"><Link href="/register" className="h-10 px-6 rounded-full bg-white text-black font-black text-sm grid place-items-center">Register Politician</Link><Link href="/admin" className="h-10 px-6 rounded-full bg-white/10 border border-white/10 text-sm grid place-items-center">Admin</Link></div></header>
 
-      <div id="live" className="relative lg:sticky lg:top-[100px]"><div className="absolute -inset-10 bg-gradient-to-br from-[#CE1126]/20 via-white/5 to-[#008C51]/20 blur-[80px] rounded-[40px]"/><div className="relative rounded-[36px] bg-gradient-to-b from-white/[0.10] to-white/[0.02] border border-white/[0.12] p-2.5 backdrop-blur-2xl shadow-2xl"><div className="rounded-[28px] bg-[#0A0A0D] border border-white/[0.06] overflow-hidden"><div className="p-7 flex justify-between items-center border-b border-white/[0.06]"><div className="flex items-center gap-3"><div className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"/><span className="text-xs font-bold tracking-[0.2em] text-white/60">LIVE SENTIMENT</span></div><span className="text-[10px] px-2.5 py-1 rounded-full bg-white text-black font-black">KE 2027</span></div><div className="p-2"><div className="h-[340px] bg-gradient-to-b from-white/[0.03] to-transparent rounded-[20px] p-4"><ResponsiveContainer width="100%" height="100%"><AreaChart data={data}><defs><linearGradient id="k" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fff" stopOpacity={0.5}/><stop offset="100%" stopColor="#008C51" stopOpacity={0}/></linearGradient></defs><XAxis dataKey="m" stroke="#ffffff22" fontSize={11} axisLine={false} tickLine={false}/><Tooltip contentStyle={{background:"#111",border:"1px solid #222",borderRadius:16}}/><Area dataKey="r" stroke="#fff" strokeWidth={3} fill="url(#k)" /></AreaChart></ResponsiveContainer></div></div><div className="p-4 grid grid-cols-3 gap-3"><div className="rounded-2xl bg-white text-black p-4 shadow-xl"><p className="text-[10px] tracking-widest opacity-50">RUTO</p><p className="text-[22px] font-black">54.8%</p><p className="text-[11px] font-bold text-emerald-700">▲ +2.4%</p></div><div className="rounded-2xl bg-white/5 border border-white/10 p-4"><p className="text-[10px] tracking-widest opacity-50">RAILA</p><p className="text-[22px] font-black">31.2%</p><p className="text-[11px] font-bold text-red-400">▼ 1.1%</p></div><div className="rounded-2xl bg-[#CE1126]/10 border border-[#CE1126]/20 p-4"><p className="text-[10px] tracking-widest opacity-50">SWING</p><p className="text-[22px] font-black">14%</p><p className="text-[11px] font-bold text-[#CE1126]">VOLATILE</p></div></div></div></div></div>
-    </section>
-    {open&&<div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl grid place-items-center p-6"><div className="w-full max-w-[440px] rounded-[32px] bg-[#121214] border border-white/10 p-8 shadow-[0_0_100px_rgba(255,255,255,0.1)]"><h2 className="text-3xl font-black tracking-tighter">Join the intelligence.</h2><p className="text-white/40 mt-2">Get verified in 24h.</p><div className="mt-8 grid grid-cols-2 gap-3"><a href="/register" className="h-12 rounded-full bg-white text-black font-black grid place-items-center">Politician</a><a href="/login" className="h-12 rounded-full bg-white/10 border border-white/10 font-bold grid place-items-center">Login</a></div><button onClick={()=>setOpen(false)} className="w-full mt-4 h-11 rounded-full bg-white/5 text-white/40">Close</button></div></div>}
-  </main>)
+      <section className="max-w-[1200px] mx-auto px-8 pt-12 pb-8">
+        <h1 className="text-[56px] font-black leading-[0.9] tracking-tight">Find Your<br/><span className="text-white/20">Leader.</span></h1>
+        <p className="text-white/40 mt-4 max-w-[520px] text-[14px]">Kenya's first verified political directory. FEATURED leaders are homepage verified - they paid KES 9,500 for maximum visibility.</p>
+        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search by name, county, party..." className="mt-8 h-[56px] w-full max-w-[520px] px-6 rounded-full bg-[#121214] border border-white/10 outline-none"/>
+      </section>
+
+      {!q && featured.length>0 && (
+        <section className="max-w-[1200px] mx-auto px-8 pb-12">
+          <div className="flex items-center gap-3 mb-4"><div className="h-6 px-3 rounded-full bg-[#FFD700] text-black text-[10px] font-black grid place-items-center tracking-widest">FEATURED • KES 9,500</div><div className="text-white/40 text-xs">Homepage Spotlight • Ads • Verified</div></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {featured.map((u:any)=><div key={u.id} className="rounded-[24px] bg-[#FFD700]/10 border border-[#FFD700]/30 p-6 shadow-[0_0_40px_rgba(255,215,0,0.15)]"><div className="flex justify-between"><div className="font-black text-[18px]">{u.name}</div><span className="text-[8px] h-5 px-2 rounded-full bg-[#FFD700] text-black font-black grid place-items-center">FEATURED</span></div><div className="text-[12px] text-white/60 mt-2">{u.role} • {u.county} • {u.party}</div><div className="mt-4 text-[11px] text-white/30">{u.email}</div></div>)}
+          </div>
+        </section>
+      )}
+
+      <section className="max-w-[1200px] mx-auto px-8 pb-20">
+        <div className="text-[11px] tracking-[0.2em] text-white/30 mb-4">{q? `SEARCH RESULTS • ${filtered.length}` : `ALL POLITICIANS • ${users.length}`}</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {(q? filtered : users).map((u:any)=>(
+            <div key={u.id} className={`rounded-[20px] border p-5 ${u.tier==="featured"? "bg-[#FFD700]/5 border-[#FFD700]/20" : u.tier==="verified"? "bg-white/[0.04] border-white/15" : "bg-[#121214] border-white/5 opacity-80"}`}>
+              <div className="flex justify-between items-start"><div className="font-bold text-[14px]">{u.name}</div>{u.tier==="featured"? <span className="text-[8px] px-2 py-1 rounded-full bg-[#FFD700] text-black font-black">FEATURED</span> : u.tier==="verified"? <span className="text-[8px] px-2 py-1 rounded-full bg-white text-black font-black">VERIFIED</span> : <span className="text-[8px] px-2 py-1 rounded-full bg-white/10 text-white/40">FREE</span>}</div>
+              <div className="text-[11px] text-white/40 mt-2">{u.county} • {u.party} • {u.role}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
+  )
 }
