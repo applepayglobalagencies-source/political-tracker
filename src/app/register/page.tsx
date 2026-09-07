@@ -1,59 +1,61 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
-const COUNTIES = ["Baringo","Bomet","Bungoma","Busia","Elgeyo-Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Muranga","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita-Taveta","Tana River","Tharaka-Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"];
-const PARTIES = ["UDA","ODM","Wiper","Jubilee","ANC","FORD-Kenya","KANU","Independent","Other"];
-const ROLES = ["Governor","Senator","MP","MCA","Woman Rep","Youth Leader"];
-export default function Page(){
-  const router = useRouter();
-  const [f,setF]=useState<any>({tier:"free"});
+import { useRouter } from "next/navigation";
+
+export default function Register(){
+  const [form,setForm]=useState({ name:"", county:"Bomet", role:"MCA", party:"UDA", phone:"", aliases:"", mpesa_code:"" });
   const [loading,setLoading]=useState(false);
-  const [showPay,setShowPay]=useState(false);
-  async function submit(e:any){
-    e.preventDefault();
-    if(f.tier!=="free" &&!showPay){ setShowPay(true); return; }
-    if(f.tier!=="free" &&!f.mpesaCode){ alert("Please paste M-Pesa code after paying Till 8629094"); return; }
+  const router = useRouter();
+
+  const submit = async()=>{
+    if(!form.name ||!form.phone ||!form.mpesa_code) return alert("Fill Name, Phone, M-Pesa Code");
     setLoading(true);
-    const { error } = await supabase.from("politicians").insert([{ name:f.name, id_number:f.idNumber, email:f.email, phone:f.phone, county:f.county, party:f.party, role:f.role, tier:f.tier, verified:false, mpesa_code:f.mpesaCode||"", payment_status: f.tier==="free"?"paid":"pending" }]);
+    const { data, error } = await supabase.from("politicians").insert([{
+      name: form.name,
+      county: form.county,
+      role: form.role,
+      party: form.party,
+      phone: form.phone,
+      aliases: form.aliases, // e.g. Kimoche, Kip, Felix Albats
+      mpesa_code: form.mpesa_code,
+      tier: "verified",
+      verified: false, // admin will approve after confirming Till 8629094
+    }]).select().single();
     setLoading(false);
-    if(error){ alert(error.message); return; }
-    if(f.tier==="free") alert("FREE registered!");
-    else alert("Payment received! Code "+f.mpesaCode+" submitted. Till 8629094. We verify in 10 mins and you go FEATURED.");
-    window.open("https://wa.me/254758973109?text="+encodeURIComponent("Hi, I just paid Till 8629094 - "+f.tier+" - "+f.name+" - Code: "+f.mpesaCode), "_blank"); router.push("/");
-  }
+    if(error) return alert(error.message);
+    // Redirect to his profile where he will see mentions scanning
+    router.push(`/politician/${data.id}?new=1`);
+  };
+
   return (
-    <main className="min-h-screen bg-[#050507] text-white flex justify-center px-6 py-12">
-      <div className="w-full max-w-[640px]">
-        <h1 className="text-[48px] font-black leading-[0.9]">Register<br/><span className="text-white/30">Politician.</span></h1>
-        <form onSubmit={submit} className="mt-8 rounded-[32px] bg-[#121214] border border-white/10 p-8 space-y-4">
+    <main className="min-h-screen bg-[#F8F8F7] grid place-items-center p-6">
+      <div className="w-full max-w-[480px] rounded-[24px] bg-white border border-black/10 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+        <div className="h-10 w-10 rounded-full bg-black text-white grid place-items-center font-black">PT</div>
+        <h1 className="mt-4 font-black text-[22px] leading-tight">Get Verified & See<br/>What People Say About You</h1>
+        <p className="mt-2 text-[12px] opacity-60">We track Facebook, Instagram, Threads mentions of you in {form.county}. Till 8629094</p>
+
+        <div className="mt-6 space-y-3">
+          <input value={form.name} onChange={e=>setForm({...form, name:e.target.value})} placeholder="Full Official Name e.g. Hon Felix Kipyegon" className="w-full h-12 px-5 rounded-full bg-black/5 border border-black/10 text-[13px] outline-none"/>
+          <input value={form.aliases} onChange={e=>setForm({...form, aliases:e.target.value})} placeholder="Nicknames people use: e.g. Kimoche, Kip, Albats" className="w-full h-12 px-5 rounded-full bg-[#FFD700]/20 border border-[#FFD700]/30 text-[13px] outline-none font-bold"/>
           <div className="grid grid-cols-2 gap-3">
-            <input required placeholder="Full Name" onChange={e=>setF({...f,name:e.target.value})} className="col-span-2 h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10 outline-none"/>
-            <input required placeholder="ID Number" onChange={e=>setF({...f,idNumber:e.target.value})} className="h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10 outline-none"/>
-            <input required placeholder="Phone (M-Pesa)" onChange={e=>setF({...f,phone:e.target.value})} className="h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10 outline-none"/>
-            <input required type="email" placeholder="Email" onChange={e=>setF({...f,email:e.target.value})} className="col-span-2 h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10 outline-none"/>
-            <select required onChange={e=>setF({...f,county:e.target.value})} className="h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">County</option>{COUNTIES.map(c=><option key={c}>{c}</option>)}</select>
-            <select required onChange={e=>setF({...f,party:e.target.value})} className="h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">Party</option>{PARTIES.map(p=><option key={p}>{p}</option>)}</select>
-            <select required onChange={e=>setF({...f,role:e.target.value})} className="col-span-2 h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">Role</option>{ROLES.map(r=><option key={r}>{r}</option>)}</select>
+            <input value={form.county} onChange={e=>setForm({...form, county:e.target.value})} placeholder="County" className="h-12 px-5 rounded-full bg-black/5 border border-black/10 text-[13px] outline-none"/>
+            <input value={form.role} onChange={e=>setForm({...form, role:e.target.value})} placeholder="Role: MCA, MP..." className="h-12 px-5 rounded-full bg-black/5 border border-black/10 text-[13px] outline-none"/>
           </div>
-          <div className="grid grid-cols-1 gap-3 pt-4">
-            <button type="button" onClick={()=>{setF({...f,tier:"free"}); setShowPay(false);}} className={`h-[72px] rounded-[20px] border text-left px-6 flex justify-between items-center ${f.tier==="free"? "bg-white text-black border-white" : "bg-white/5 border-white/10 text-white/60"}`}><div><div className="font-black text-[13px]">FREE - Basic listing</div><div className="text-[10px] opacity-60">30 days</div></div><div className="font-black">KES 0</div></button>
-            <button type="button" onClick={()=>{setF({...f,tier:"verified"}); setShowPay(true);}} className={`h-[72px] rounded-[20px] border text-left px-6 flex justify-between items-center ${f.tier==="verified"? "bg-white text-black border-white" : "bg-white/5 border-white/10 text-white/60"}`}><div><div className="font-black text-[13px]">VERIFIED</div><div className="text-[10px] opacity-60">Badge + top rank</div></div><div className="font-black">KES 4,500</div></button>
-            <button type="button" onClick={()=>{setF({...f,tier:"featured"}); setShowPay(true);}} className={`h-[84px] rounded-[20px] border text-left px-6 flex justify-between items-center ${f.tier==="featured"? "bg-[#FFD700] text-black border-[#FFD700] shadow-[0_0_30px_rgba(255,215,0,0.2)]" : "bg-white/5 border-white/10 text-white/60"}`}><div><div className="font-black text-[13px]">FEATURED</div><div className="text-[10px] opacity-70">Homepage + ads + Verified</div></div><div className="font-black">KES 9,500</div></button>
+          <div className="grid grid-cols-2 gap-3">
+            <input value={form.party} onChange={e=>setForm({...form, party:e.target.value})} placeholder="Party: UDA..." className="h-12 px-5 rounded-full bg-black/5 border border-black/10 text-[13px] outline-none"/>
+            <input value={form.phone} onChange={e=>setForm({...form, phone:e.target.value})} placeholder="WhatsApp e.g. 0758..." className="h-12 px-5 rounded-full bg-black/5 border border-black/10 text-[13px] outline-none"/>
           </div>
-          {showPay && f.tier!=="free" && (
-            <div className="rounded-[20px] bg-[#FFD700]/10 border border-[#FFD700]/30 p-5 space-y-3 animate-in">
-              <div className="font-black text-[13px] text-[#FFD700]">Lipa na M-Pesa - Till 8629094</div>
-              <div className="rounded-[12px] bg-black border border-white/10 p-4 text-[12px] leading-relaxed font-mono">
-                <div className="text-white/40 text-[10px] tracking-widest">STEPS</div>
-                <div className="mt-2 text-white/80">1. M-Pesa -> Lipa na M-Pesa<br/>2. Buy Goods and Services<br/>3. Till No: <span className="text-[#FFD700] font-black text-[16px]">8629094</span><br/>4. Amount: <span className="font-black text-white">{f.tier==="verified"?"4,500":"9,500"}</span><br/>5. PIN -> Send</div>
-              </div>
-              <input required placeholder="Paste M-Pesa Code e.g. QGI7..." value={f.mpesaCode||""} onChange={e=>setF({...f,mpesaCode:e.target.value.toUpperCase()})} className="w-full h-[56px] px-6 rounded-full bg-black border border-[#FFD700]/30 outline-none text-white font-mono tracking-widest"/>
-              <div className="text-[10px] text-white/40 text-center">We verify code Qxx... in admin then you appear GOLD on homepage</div>
-            </div>
-          )}
-          <button disabled={loading} className="w-full h-[56px] rounded-full bg-white text-black font-black">{loading?"Submitting...": showPay && f.tier!=="free"? "Submit M-Pesa Code ->" : "Create Politician ->"}</button>
-        </form>
+          <div className="rounded-[16px] bg-black text-white p-4">
+            <div className="text-[11px] tracking-widest opacity-50">LIPA NA M-PESA</div>
+            <div className="mt-1 font-black text-[14px]">Till No: 8629094 • Buy Goods</div>
+            <div className="mt-1 text-[11px] opacity-60">KES 4,500 Verified • KES 9,500 Featured Gold (Homepage)</div>
+            <input value={form.mpesa_code} onChange={e=>setForm({...form, mpesa_code:e.target.value})} placeholder="Enter M-Pesa Code e.g. SHX123..." className="mt-3 w-full h-11 px-5 rounded-full bg-white/10 border border-white/20 text-[13px] outline-none placeholder:text-white/40"/>
+          </div>
+        </div>
+
+        <button onClick={submit} disabled={loading} className="mt-5 w-full h-12 rounded-full bg-[#25D366] text-black font-black text-[13px]">{loading? "Submitting..." : "Submit & See My Mentions →"}</button>
+        <div className="mt-3 text-center text-[10px] opacity-40">After payment, admin verifies in 10 mins • WhatsApp 0758973109</div>
       </div>
     </main>
   )
