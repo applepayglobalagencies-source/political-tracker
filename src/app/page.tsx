@@ -9,7 +9,7 @@ export default function Home(){
   const featured = users.filter(u=>u.tier==="featured");
   const verified = users.filter(u=>u.tier==="verified");
   const filtered = users.filter(u => (u.name||"").toLowerCase().includes(q.toLowerCase()) || (u.county||"").toLowerCase().includes(q.toLowerCase()));
-  const adminWa = "https://wa.me/254700000000?text="+encodeURIComponent("Hi, I just paid Till 8629094 on Political Tracker.KE - please verify my payment");
+  const adminWa = "https://wa.me/254758973109?text="+encodeURIComponent("Hi, I just paid Till 8629094 on Political Tracker.KE - please verify my payment");
   return (
     <main className="min-h-screen bg-[#050507] text-white">
       <header className="max-w-[1240px] mx-auto px-8 py-7 flex justify-between items-center"><div className="font-black text-[18px]">POLITICAL TRACKER<span className="text-white/30">.KE</span> <span className="text-[10px] ml-2 px-2 py-1 rounded-full bg-[#FFD700] text-black">TILL 8629094</span></div><div className="flex gap-2"><Link href="/register" className="h-11 px-7 rounded-full bg-white text-black font-black text-[13px] grid place-items-center">Register</Link><Link href="/admin" className="h-11 px-6 rounded-full bg-white/10 border border-white/10 text-[13px] grid place-items-center">Admin</Link></div></header>

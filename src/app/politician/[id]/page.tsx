@@ -20,8 +20,8 @@ export default function Profile(){
   if(!u) return <main className="min-h-screen bg-[#050507] grid place-items-center text-white/40">Loading profile...</main>;
 
   const whatsappMsg = `Hi, I saw ${u.name} on Political Tracker.KE - Till 8629094 - I want to connect`;
-  const waLink = `https://wa.me/254700000000?text=${encodeURIComponent(whatsappMsg)}`;
-  const adminWa = `https://wa.me/254700000000?text=${encodeURIComponent(`Hi, I just paid Till 8629094 for ${u.tier} - ${u.name} - Code: ${u.mpesa_code}. Please verify.`)}`;
+  const waLink = `https://wa.me/254758973109?text=${encodeURIComponent(whatsappMsg)}`;
+  const adminWa = `https://wa.me/254758973109?text=${encodeURIComponent(`Hi, I just paid Till 8629094 for ${u.tier} - ${u.name} - Code: ${u.mpesa_code}. Please verify.`)}`;
 
   return (
     <main className="min-h-screen bg-[#050507] text-white">
@@ -66,7 +66,7 @@ export default function Profile(){
         <div className="mt-8 rounded-[24px] bg-white text-black p-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div><div className="font-black">Is this you? Claim this profile.</div><div className="text-[12px] opacity-60">Pay Till 8629094 to get Verified badge + Gold homepage</div></div>
           <div className="flex gap-2">
-            <a href={`https://wa.me/254700000000?text=${encodeURIComponent(`Hi, I want to claim ${u.name} profile on Political Tracker.KE - Till 8629094`)}`} target="_blank" className="h-11 px-6 rounded-full bg-[#25D366] text-black font-black text-[12px] grid place-items-center">Claim via WhatsApp</a>
+            <a href={`https://wa.me/254758973109?text=${encodeURIComponent(`Hi, I want to claim ${u.name} profile on Political Tracker.KE - Till 8629094`)}`} target="_blank" className="h-11 px-6 rounded-full bg-[#25D366] text-black font-black text-[12px] grid place-items-center">Claim via WhatsApp</a>
             <Link href="/register" className="h-11 px-6 rounded-full bg-black text-white font-black text-[12px] grid place-items-center">Register</Link>
           </div>
         </div>

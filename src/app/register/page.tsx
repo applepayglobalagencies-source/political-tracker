@@ -20,7 +20,7 @@ export default function Page(){
     if(error){ alert(error.message); return; }
     if(f.tier==="free") alert("FREE registered!");
     else alert("Payment received! Code "+f.mpesaCode+" submitted. Till 8629094. We verify in 10 mins and you go FEATURED.");
-    router.push("/");
+    window.open("https://wa.me/254758973109?text="+encodeURIComponent("Hi, I just paid Till 8629094 - "+f.tier+" - "+f.name+" - Code: "+f.mpesaCode), "_blank"); router.push("/");
   }
   return (
     <main className="min-h-screen bg-[#050507] text-white flex justify-center px-6 py-12">
