@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react"; import { useRouter } from "next/navigation"; import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
 const data=[{v:40},{v:52},{v:48},{v:65},{v:58},{v:72}];
 export default function Dashboard(){
