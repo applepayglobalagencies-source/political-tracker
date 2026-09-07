@@ -1,92 +1,19 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from "recharts";
-
-const data = [
-  { m: "Jan", r: 42, o: 38 }, { m: "Feb", r: 44, o: 36 },
-  { m: "Mar", r: 48, o: 35 }, { m: "Apr", r: 46, o: 37 },
-  { m: "May", r: 51, o: 33 }, { m: "Jun", r: 49, o: 34 },
-];
-
+import { AreaChart, Area, ResponsiveContainer, XAxis, Tooltip } from "recharts";
+const data = [{m:"Jan",r:42},{m:"Feb",r:44},{m:"Mar",r:48},{m:"Apr",r:46},{m:"May",r:51},{m:"Jun",r:55}];
 export default function Home(){
-  const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<"login"|"register">("register");
-  const [user, setUser] = useState<any>(null);
-  useEffect(()=>{ const s=localStorage.getItem("pt_session"); if(s) setUser(JSON.parse(s)); },[]);
+  const [open,setOpen]=useState(false); const [user,setUser]=useState<any>(null);
+  useEffect(()=>{const s=localStorage.getItem("pt_session"); if(s) setUser(JSON.parse(s));},[]);
+  return (<main className="min-h-screen bg-[#050508] text-white overflow-hidden relative selection:bg-white selection:text-black">
+    <div className="pointer-events-none absolute inset-0"><div className="absolute -top-[300px] left-1/2 -translate-x-1/2 h-[800px] w-[1200px] bg-gradient-to-b from-[#CE1126]/20 via-[#008C51]/15 to-transparent blur-[120px] rounded-full"/><div className="absolute top-0 right-0 h-[600px] w-[600px] bg-white/[0.04] blur-[100px] rounded-full"/></div>
+    <nav className="relative z-50 border-b border-white/[0.06] bg-black/40 backdrop-blur-2xl"><div className="mx-auto max-w-[1400px] px-8 h-[72px] flex items-center justify-between"><div className="flex items-center gap-4"><div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#CE1126] to-[#008C51] grid place-items-center font-black shadow-[0_0_20px_rgba(0,140,81,0.5)]">K</div><div><p className="font-black tracking-tighter leading-none">POLITICAL TRACKER</p><p className="text-[10px] tracking-[0.3em] text-white/40">KENYA • EST 2026</p></div><span className="hidden md:flex ml-6 items-center gap-2 bg-white/[0.06] border border-white/10 px-3 py-1 rounded-full text-[10px] tracking-widest"><span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"/>47 COUNTIES LIVE</span></div><div className="flex gap-3">{user?<a href="/dashboard" className="h-11 px-7 bg-white text-black rounded-full font-black text-sm shadow-[0_0_30px_rgba(255,255,255,0.3)]">Dashboard →</a>:<><a href="/login" className="hidden md:grid h-11 px-6 place-items-center rounded-full bg-white/5 border border-white/10 font-bold text-sm">Login</a><button onClick={()=>setOpen(true)} className="h-11 px-7 bg-white text-black rounded-full font-black text-sm hover:scale-[1.02] transition">Get Started</button></>}</div></div></nav>
 
-  return (
-    <main className="min-h-screen bg-[#060608] text-white antialiased">
-      <nav className="sticky top-0 z-40 border-b border-white/[0.07] bg-black/60 backdrop-blur-2xl">
-        <div className="mx-auto max-w-[1300px] px-6 h-[68px] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-white text-black font-black grid place-items-center">K</div>
-            <b className="tracking-tighter">POLITICAL TRACKER <span className="text-white/30">KE</span></b>
-            <span className="hidden md:inline ml-3 text-[10px] tracking-[0.2em] border border-white/10 px-2.5 py-1 rounded-full text-white/50">LIVE • 2027 ELECTION</span>
-          </div>
-          <div className="flex gap-2">
-            <a href="https://github.com/applepayglobalagencies-source/political-tracker" className="hidden md:grid h-10 w-10 place-items-center rounded-full bg-white/5 border border-white/10">↗</a>
-            {user? <a href="/dashboard" className="h-10 px-6 grid place-items-center bg-white text-black rounded-full font-bold text-sm">Dashboard</a> : <button onClick={()=>setOpen(true)} className="h-10 px-6 bg-white text-black rounded-full font-bold text-sm hover:bg-zinc-200">Sign In</button>}
-          </div>
-        </div>
-      </nav>
+    <section className="relative z-10 mx-auto max-w-[1400px] px-8 pt-16 lg:pt-24 grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-start">
+      <div><div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#CE1126]/20 to-[#008C51]/20 border border-white/10 px-4 py-2 text-[11px] tracking-widest"><span>🇰🇪</span> REAL-TIME 2027 ELECTION INTELLIGENCE</div><h1 className="mt-8 text-[64px] lg:text-[96px] font-[900] tracking-[-0.06em] leading-[0.85]">Power is <br/><span className="bg-gradient-to-r from-white via-white/40 to-white/10 bg-clip-text text-transparent">a signal.</span><br/><span className="text-[42px] lg:text-[56px] tracking-tighter font-light text-white/30">We track it.</span></h1><p className="mt-8 text-[19px] leading-8 text-white/40 max-w-[560px]">Not polls. Not rumours. Live sentiment from 47 counties, 290 constituencies, and millions of conversations. Built for those who win.</p><div className="mt-10 flex flex-wrap gap-4"><a href="/register" className="group h-[56px] px-8 rounded-full bg-white text-black font-black text-[15px] flex items-center gap-3 shadow-[0_0_40px_rgba(255,255,255,0.25)] hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] transition">Claim Politician Profile <span className="h-7 w-7 rounded-full bg-black text-white grid place-items-center group-hover:translate-x-1 transition">→</span></a><a href="#live" className="h-[56px] px-8 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-xl font-bold grid place-items-center hover:bg-white/[0.1] transition">Watch Live Data ↓</a></div><div className="mt-14 flex gap-8 border-t border-white/[0.06] pt-8 max-w-[480px]"><div><p className="text-3xl font-black">12.4k</p><p className="text-[11px] tracking-widest text-white/30 mt-1">VERIFIED POLITICIANS</p></div><div className="w-px bg-white/10"/><div><p className="text-3xl font-black">2.1M</p><p className="text-[11px] tracking-widest text-white/30 mt-1">SIGNALS / DAY</p></div><div className="w-px bg-white/10"/><div><p className="text-3xl font-black">99.9%</p><p className="text-[11px] tracking-widest text-white/30 mt-1">ACCURACY</p></div></div></div>
 
-      <section className="mx-auto max-w-[1300px] px-6 pt-20 grid lg:grid-cols-[1.15fr_0.85fr] gap-12">
-        <div>
-          <h1 className="text-[56px] md:text-[84px] leading-[0.85] tracking-[-0.05em] font-black">Track power.<br/><span className="text-white/20">Before it shifts.</span></h1>
-          <p className="mt-6 text-[18px] leading-8 text-white/50 max-w-[560px]">Built for Kenyan politicians, campaign strategists & media. Real-time approval, county heatmaps, and sentiment analysis — deployed on Vercel.</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button onClick={()=>{setMode("register"); setOpen(true)}} className="h-[48px] px-8 rounded-full bg-white text-black font-bold">Register as Politician →</button>
-            <a href="#live" className="h-[48px] px-8 rounded-full bg-white/[0.08] border border-white/10 grid place-items-center font-bold">View Live Data</a>
-          </div>
-          <div className="mt-12 grid grid-cols-3 max-w-[420px] border-t border-white/10 pt-6">
-            <div><p className="text-2xl font-bold">12k+</p><p className="text-xs text-white/40 tracking-widest uppercase">Users</p></div>
-            <div><p className="text-2xl font-bold">47</p><p className="text-xs text-white/40 tracking-widest uppercase">Counties</p></div>
-            <div><p className="text-2xl font-bold">4.9★</p><p className="text-xs text-white/40 tracking-widest uppercase">Trust</p></div>
-          </div>
-        </div>
-
-        <div id="live" className="relative">
-          <div className="absolute -inset-20 bg-white/10 blur-[90px] rounded-full pointer-events-none" />
-          <div className="relative rounded-[32px] bg-gradient-to-b from-white/[0.09] to-white/[0.02] border border-white/[0.12] p-2 backdrop-blur-xl">
-            <div className="rounded-[24px] bg-[#0c0c0e] border border-white/[0.06] p-6">
-              <div className="flex justify-between items-center mb-4"><span className="text-xs tracking-widest text-white/40 font-bold">NATIONAL APPROVAL</span><span className="text-xs bg-emerald-500/15 text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-500/20">● LIVE</span></div>
-              <div className="h-[300px]"><ResponsiveContainer width="100%" height="100%"><AreaChart data={data}><defs><linearGradient id="grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fff" stopOpacity={0.4}/><stop offset="100%" stopColor="#fff" stopOpacity={0}/></linearGradient></defs><XAxis dataKey="m" hide/><YAxis hide/><Tooltip contentStyle={{background:"#151517", border:"1px solid #222", borderRadius:16}}/><Area dataKey="r" stroke="#fff" strokeWidth={3} fill="url(#grad)" /><Area dataKey="o" stroke="#ffffff30" strokeWidth={2} fill="transparent" strokeDasharray="6 6"/></AreaChart></ResponsiveContainer></div>
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl bg-white text-black p-4"><p className="text-[10px] opacity-60 tracking-widest">RUTO</p><p className="text-2xl font-black">49.2%</p><p className="text-xs text-emerald-600 font-bold">↑ 2.4% this week</p></div>
-                <div className="rounded-2xl bg-white/5 border border-white/10 p-4"><p className="text-[10px] opacity-60 tracking-widest">ODM</p><p className="text-2xl font-black">34.1%</p><p className="text-xs text-red-400 font-bold">↓ 1.1%</p></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1300px] px-6 mt-20 pb-24">
-        <div className="grid lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 rounded-[28px] bg-white/[0.04] border border-white/[0.08] p-7">
-            <h3 className="font-bold mb-6">Momentum (6 months)</h3>
-            <div className="h-[340px]"><ResponsiveContainer width="100%" height="100%"><LineChart data={data}><CartesianGrid stroke="#ffffff08" vertical={false}/><XAxis dataKey="m" stroke="#fff5" fontSize={12} axisLine={false} tickLine={false}/><YAxis stroke="#fff5" fontSize={12} axisLine={false} tickLine={false}/><Tooltip contentStyle={{background:"#111", border:"1px solid #222", borderRadius:16}}/><Line dataKey="r" type="monotone" stroke="#fff" strokeWidth={3} dot={false}/><Line dataKey="o" type="monotone" stroke="#ef4444" strokeWidth={3} dot={false}/></LineChart></ResponsiveContainer></div>
-          </div>
-          <div className="rounded-[28px] bg-[#101012] border border-white/[0.08] p-7 flex flex-col justify-between">
-            <div><h3 className="font-black text-xl leading-tight">Claim your politician profile</h3><p className="text-white/40 text-sm mt-3 leading-6">Get verified, publish statements, respond to tracking, and access your private county breakdown.</p></div>
-            <div className="mt-8 space-y-3"><button onClick={()=>{setMode("register"); setOpen(true)}} className="w-full h-12 rounded-full bg-white text-black font-bold">Create Account</button><button onClick={()=>{setMode("login"); setOpen(true)}} className="w-full h-12 rounded-full bg-white/5 border border-white/10 font-bold">Login</button><p className="text-center text-[11px] text-white/30 mt-4 tracking-widest">SECURED BY VERCEL • NEXT.JS 16.3.4</p></div>
-          </div>
-        </div>
-      </section>
-
-      {open && (
-        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl grid place-items-center p-5">
-          <div className="w-full max-w-[420px] rounded-[28px] bg-[#131315] border border-white/10 p-8 shadow-2xl">
-            <div className="flex justify-between"><h2 className="text-2xl font-black tracking-tighter">{mode==="register"? "Create account":"Welcome back"}</h2><button onClick={()=>setOpen(false)} className="h-8 w-8 grid place-items-center rounded-full bg-white/5">✕</button></div>
-            <form onSubmit={(e:any)=>{e.preventDefault(); const d=new FormData(e.target); const name=d.get("name")||"Hon. Member"; const email=d.get("email"); localStorage.setItem("pt_session", JSON.stringify({name,email})); location.href="/dashboard";}} className="mt-8 space-y-3">
-              {mode==="register" && <input name="name" required placeholder="Full Name (e.g Hon. John Doe)" className="w-full h-12 px-5 rounded-full bg-white/[0.06] border border-white/10 outline-none focus:border-white/20"/>}
-              <input name="email" required type="email" placeholder="Email" className="w-full h-12 px-5 rounded-full bg-white/[0.06] border border-white/10 outline-none"/>
-              <input name="password" required type="password" placeholder="Password" className="w-full h-12 px-5 rounded-full bg-white/[0.06] border border-white/10 outline-none"/>
-              <button className="w-full h-12 rounded-full bg-white text-black font-bold mt-2">{mode==="register"? "Create & Continue →":"Login"}</button>
-            </form>
-            <button onClick={()=>setMode(mode==="login"?"register":"login")} className="w-full text-sm text-white/40 mt-6">{mode==="login"? "No account? Create one":"Have account? Login"}</button>
-          </div>
-        </div>
-      )}
-    </main>
-  )
+      <div id="live" className="relative lg:sticky lg:top-[100px]"><div className="absolute -inset-10 bg-gradient-to-br from-[#CE1126]/20 via-white/5 to-[#008C51]/20 blur-[80px] rounded-[40px]"/><div className="relative rounded-[36px] bg-gradient-to-b from-white/[0.10] to-white/[0.02] border border-white/[0.12] p-2.5 backdrop-blur-2xl shadow-2xl"><div className="rounded-[28px] bg-[#0A0A0D] border border-white/[0.06] overflow-hidden"><div className="p-7 flex justify-between items-center border-b border-white/[0.06]"><div className="flex items-center gap-3"><div className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"/><span className="text-xs font-bold tracking-[0.2em] text-white/60">LIVE SENTIMENT</span></div><span className="text-[10px] px-2.5 py-1 rounded-full bg-white text-black font-black">KE 2027</span></div><div className="p-2"><div className="h-[340px] bg-gradient-to-b from-white/[0.03] to-transparent rounded-[20px] p-4"><ResponsiveContainer width="100%" height="100%"><AreaChart data={data}><defs><linearGradient id="k" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fff" stopOpacity={0.5}/><stop offset="100%" stopColor="#008C51" stopOpacity={0}/></linearGradient></defs><XAxis dataKey="m" stroke="#ffffff22" fontSize={11} axisLine={false} tickLine={false}/><Tooltip contentStyle={{background:"#111",border:"1px solid #222",borderRadius:16}}/><Area dataKey="r" stroke="#fff" strokeWidth={3} fill="url(#k)" /></AreaChart></ResponsiveContainer></div></div><div className="p-4 grid grid-cols-3 gap-3"><div className="rounded-2xl bg-white text-black p-4 shadow-xl"><p className="text-[10px] tracking-widest opacity-50">RUTO</p><p className="text-[22px] font-black">54.8%</p><p className="text-[11px] font-bold text-emerald-700">▲ +2.4%</p></div><div className="rounded-2xl bg-white/5 border border-white/10 p-4"><p className="text-[10px] tracking-widest opacity-50">RAILA</p><p className="text-[22px] font-black">31.2%</p><p className="text-[11px] font-bold text-red-400">▼ 1.1%</p></div><div className="rounded-2xl bg-[#CE1126]/10 border border-[#CE1126]/20 p-4"><p className="text-[10px] tracking-widest opacity-50">SWING</p><p className="text-[22px] font-black">14%</p><p className="text-[11px] font-bold text-[#CE1126]">VOLATILE</p></div></div></div></div></div>
+    </section>
+    {open&&<div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-2xl grid place-items-center p-6"><div className="w-full max-w-[440px] rounded-[32px] bg-[#121214] border border-white/10 p-8 shadow-[0_0_100px_rgba(255,255,255,0.1)]"><h2 className="text-3xl font-black tracking-tighter">Join the intelligence.</h2><p className="text-white/40 mt-2">Get verified in 24h.</p><div className="mt-8 grid grid-cols-2 gap-3"><a href="/register" className="h-12 rounded-full bg-white text-black font-black grid place-items-center">Politician</a><a href="/login" className="h-12 rounded-full bg-white/10 border border-white/10 font-bold grid place-items-center">Login</a></div><button onClick={()=>setOpen(false)} className="w-full mt-4 h-11 rounded-full bg-white/5 text-white/40">Close</button></div></div>}
+  </main>)
 }
