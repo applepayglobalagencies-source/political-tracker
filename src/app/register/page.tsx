@@ -1,28 +1,22 @@
 ﻿"use client";
-import { useState } from "react"; import { useRouter } from "next/navigation"; import { supabase } from "@/lib/supabase";
-const COUNTIES=["Baringo","Bomet","Bungoma","Busia","Elgeyo-Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita-Taveta","Tana River","Tharaka-Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"];
-const PARTIES=["UDA","ODM","Wiper","Jubilee","ANC","FORD-Kenya","KANU","Independent","Other"];
-const ROLES=["Governor","Senator","MP","Woman Rep","MCA","Campaign Manager","Journalist","Analyst","Youth Leader"];
-export default function ProRegister(){
-  const r=useRouter(); const [step,setStep]=useState(1); const [form,setForm]=useState<any>({}); const [loading,setLoading]=useState(false);
-  const submit = async (e:any)=>{
-    e.preventDefault(); if(step<3){ setStep(step+1); return; }
-    setLoading(true);
-    const { error } = await supabase.from("politicians").insert([{ name:form.name, id_number:form.idNumber, email:form.email, phone:form.phone, county:form.county, constituency:form.constituency, party:form.party, role:form.role, twitter:form.twitter, facebook:form.facebook, tier:form.tier||"free", verified:false }]);
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+
+const COUNTIES = ["Baringo","Bomet","Bungoma","Busia","Nairobi","Nakuru","Kiambu","Mombasa","Kisumu","Uasin Gishu","Kakamega","Machakos","Bomet","Kericho"];
+const PARTIES = ["UDA","ODM","Wiper","Jubilee","Independent"];
+const ROLES = ["Governor","Senator","MP","MCA","Woman Rep"];
+
+export default function Page(){
+  const router = useRouter();
+  const [f,setF]=useState<any>({});
+  const [loading,setLoading]=useState(false);
+  async function submit(e:any){
+    e.preventDefault(); setLoading(true);
+    const { error } = await supabase.from("politicians").insert([{ name:f.name, id_number:f.idNumber, email:f.email, phone:f.phone, county:f.county, party:f.party, role:f.role, tier:f.tier||"free", verified:false }]);
     setLoading(false);
-    if(error){ alert("Error: "+error.message); return; }
-    localStorage.setItem("pt_session", JSON.stringify(form));
-    r.push("/dashboard");
-  };
-  return (<main className="min-h-screen bg-[#050508] text-white"><div className="max-w-[1280px] mx-auto px-6 py-10 grid lg:grid-cols-[0.9fr_1.1fr] gap-10">
-    <div className="hidden lg:block"><a href="/" className="flex gap-3 items-center"><div className="h-11 w-11 rounded-full bg-gradient-to-br from-[#CE1126] to-[#008C51] grid place-items-center font-black">K</div><div><p className="font-black">POLITICAL TRACKER KE</p><p className="text-[10px] tracking-[0.3em] text-white/30">SUPABASE • LIVE</p></div></a><h1 className="mt-14 text-[64px] font-black leading-[0.85] tracking-[-0.05em]">Claim<br/><span className="text-white/20">your power.</span></h1><div className="mt-8 p-5 rounded-[20px] bg-emerald-500/10 border border-emerald-500/20"><p className="text-xs font-black text-emerald-400">● SUPABASE CONNECTED</p><p className="text-sm mt-1 text-white/70">dnpjffnyjveywyurhekh.supabase.co<br/>Data now permanent for all users</p></div></div>
-    <div className="rounded-[32px] bg-[#121214] border border-white/10 p-8"><div className="flex justify-between"><h2 className="text-2xl font-black">Pro Registration • DB</h2><span className="text-[10px] px-3 py-1 rounded-full bg-white text-black font-black">STEP {step}/3</span></div>
-      <form onSubmit={submit} className="mt-8 space-y-4">
-        {step===1&&<><input required placeholder="Full Legal Name" onChange={e=>setForm({...form,name:e.target.value})} className="w-full h-[56px] px-6 rounded-full bg-white/[0.06] border border-white/10"/><input required placeholder="ID Number" onChange={e=>setForm({...form,idNumber:e.target.value})} className="w-full h-[56px] px-6 rounded-full bg-white/[0.06] border border-white/10"/><input required placeholder="Phone 07..." onChange={e=>setForm({...form,phone:e.target.value})} className="w-full h-[56px] px-6 rounded-full bg-white/[0.06] border border-white/10"/><input required type="email" placeholder="Official Email" onChange={e=>setForm({...form,email:e.target.value})} className="w-full h-[56px] px-6 rounded-full bg-white/[0.06] border border-white/10"/></>}
-        {step===2&&<><select required onChange={e=>setForm({...form,role:e.target.value})} className="w-full h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">Select Role</option>{ROLES.map(x=><option key={x} value={x}>{x}</option>)}</select><div className="grid grid-cols-2 gap-3"><select required onChange={e=>setForm({...form,county:e.target.value})} className="h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">County</option>{COUNTIES.map(c=><option key={c} value={c}>{c}</option>)}</select><input placeholder="Constituency" onChange={e=>setForm({...form,constituency:e.target.value})} className="h-[56px] px-6 rounded-full bg-white/[0.06] border border-white/10"/></div><select required onChange={e=>setForm({...form,party:e.target.value})} className="w-full h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">Party</option>{PARTIES.map(p=><option key={p} value={p}>{p}</option>)}</select></>}
-        {step===3&&<><div className="rounded-[20px] bg-white/[0.04] border border-white/10 p-5"><p className="font-black text-sm">Choose Tier</p><div className="mt-3 space-y-2"><label className="flex justify-between p-4 rounded-2xl bg-white text-black cursor-pointer"><span className="flex gap-2 items-center"><input type="radio" name="tier" defaultChecked onChange={()=>setForm({...form,tier:"free"})}/> Free</span><b>KES 0</b></label><label className="flex justify-between p-4 rounded-2xl bg-white/10 border border-white/10 cursor-pointer"><span className="flex gap-2 items-center"><input type="radio" name="tier" onChange={()=>setForm({...form,tier:"verified"})}/> Verified ✓</span><b>2,500</b></label><label className="flex justify-between p-4 rounded-2xl bg-gradient-to-r from-[#CE1126]/20 to-[#008C51]/20 border border-white/20 cursor-pointer"><span className="flex gap-2 items-center"><input type="radio" name="tier" onChange={()=>setForm({...form,tier:"special"})}/> SPECIAL</span><b>9,999</b></label></div></div><label className="flex gap-2 text-xs text-white/50"><input type="checkbox" required/> I agree Data Protection Act 2019</label></>}
-        <div className="flex gap-3">{step>1&&<button type="button" onClick={()=>setStep(step-1)} className="h-[56px] px-8 rounded-full bg-white/5 border border-white/10 font-bold">Back</button>}<button disabled={loading} className="flex-1 h-[56px] rounded-full bg-white text-black font-black">{loading?"Saving to DB...":step===3?"Create Profile → DB":"Continue"}</button></div>
-      </form>
-    </div>
-  </div></main>)
+    if(error){ alert(error.message); return; }
+    alert("Saved to Supabase LIVE!"); router.push("/admin");
+  }
+  return (<main className="min-h-screen bg-black text-white p-8"><div className="max-w-[520px] mx-auto rounded-[24px] bg-[#121214] border border-white/10 p-8"><h1 className="text-3xl font-black">Register • Supabase LIVE</h1><p className="text-white/40 text-sm mt-2">DB: dnpjffnyjveywyurhekh</p><form onSubmit={submit} className="mt-6 space-y-3"><input required placeholder="Full Name" onChange={e=>setF({...f,name:e.target.value})} className="w-full h-12 px-5 rounded-full bg-white/5 border border-white/10"/><input required placeholder="ID Number" onChange={e=>setF({...f,idNumber:e.target.value})} className="w-full h-12 px-5 rounded-full bg-white/5 border border-white/10"/><input required placeholder="Phone" onChange={e=>setF({...f,phone:e.target.value})} className="w-full h-12 px-5 rounded-full bg-white/5 border border-white/10"/><input required type="email" placeholder="Email" onChange={e=>setF({...f,email:e.target.value})} className="w-full h-12 px-5 rounded-full bg-white/5 border border-white/10"/><select required onChange={e=>setF({...f,county:e.target.value})} className="w-full h-12 px-5 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">County</option>{COUNTIES.map(c=><option key={c}>{c}</option>)}</select><select required onChange={e=>setF({...f,party:e.target.value})} className="w-full h-12 px-5 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">Party</option>{PARTIES.map(p=><option key={p}>{p}</option>)}</select><select required onChange={e=>setF({...f,role:e.target.value})} className="w-full h-12 px-5 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">Role</option>{ROLES.map(r=><option key={r}>{r}</option>)}</select><div className="flex gap-2 pt-2"><label className="flex-1 p-3 rounded-full bg-white/5 border border-white/10 text-center cursor-pointer"><input type="radio" name="tier" defaultChecked onChange={()=>setF({...f,tier:"free"})}/> Free</label><label className="flex-1 p-3 rounded-full bg-white text-black text-center font-black cursor-pointer"><input type="radio" name="tier" onChange={()=>setF({...f,tier:"verified"})}/> Verified</label></div><button disabled={loading} className="w-full h-14 rounded-full bg-white text-black font-black mt-4">{loading?"Saving...":"Create in Supabase →"}</button></form></div></main>)
 }
