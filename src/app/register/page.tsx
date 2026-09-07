@@ -11,21 +11,25 @@ export default function Page(){
   const router = useRouter();
   const [f,setF]=useState<any>({tier:"free"});
   const [loading,setLoading]=useState(false);
+  const [showPay,setShowPay]=useState(false);
+
   async function submit(e:any){
-    e.preventDefault(); setLoading(true);
-    const { error } = await supabase.from("politicians").insert([{ name:f.name, id_number:f.idNumber, email:f.email, phone:f.phone, county:f.county, party:f.party, role:f.role, tier:f.tier, verified:false }]);
+    e.preventDefault();
+    if(f.tier!=="free" &&!showPay){ setShowPay(true); return; }
+    setLoading(true);
+    const { error } = await supabase.from("politicians").insert([{ name:f.name, id_number:f.idNumber, email:f.email, phone:f.phone, county:f.county, party:f.party, role:f.role, tier:f.tier, verified:false, mpesa_code:f.mpesaCode||"", payment_status: f.tier==="free"?"paid":"pending" }]);
     setLoading(false);
     if(error){ alert(error.message); return; }
-    if(f.tier==="free") alert("FREE registered!");
-    if(f.tier==="verified") alert("VERIFIED KES 4,500 - Pay M-Pesa to complete");
-    if(f.tier==="featured") alert("FEATURED KES 9,500 - Pay M-Pesa to complete");
-    router.push("/admin");
+    if(f.tier==="free"){ alert("FREE registered! Live now."); }
+    else { alert("Payment code submitted! Admin will verify your "+f.mpesaCode+" and approve within 10 mins. KES "+(f.tier==="verified"?"4,500":"9,500")); }
+    router.push("/");
   }
+
   return (
     <main className="min-h-screen bg-[#050507] text-white flex justify-center px-6 py-12">
       <div className="w-full max-w-[640px]">
-        <div className="mb-8"><h1 className="text-[48px] font-black leading-[0.9]">Register<br/><span className="text-white/30">Politician.</span></h1><p className="text-white/40 text-sm mt-2">Choose your listing tier</p></div>
-        <form onSubmit={submit} className="rounded-[32px] bg-[#121214] border border-white/10 p-8 space-y-4">
+        <h1 className="text-[48px] font-black leading-[0.9]">Register<br/><span className="text-white/30">Politician.</span></h1>
+        <form onSubmit={submit} className="mt-8 rounded-[32px] bg-[#121214] border border-white/10 p-8 space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <input required placeholder="Full Name" onChange={e=>setF({...f,name:e.target.value})} className="col-span-2 h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10 outline-none"/>
             <input required placeholder="ID Number" onChange={e=>setF({...f,idNumber:e.target.value})} className="h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10 outline-none"/>
@@ -35,13 +39,29 @@ export default function Page(){
             <select required onChange={e=>setF({...f,party:e.target.value})} className="h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">Party</option>{PARTIES.map(p=><option key={p}>{p}</option>)}</select>
             <select required onChange={e=>setF({...f,role:e.target.value})} className="col-span-2 h-[56px] px-6 rounded-full bg-[#1A1A1E] border border-white/10"><option value="">Role</option>{ROLES.map(r=><option key={r}>{r}</option>)}</select>
           </div>
+
           <div className="grid grid-cols-1 gap-3 pt-4">
-            <button type="button" onClick={()=>setF({...f,tier:"free"})} className={`h-[72px] rounded-[20px] border text-left px-6 flex justify-between items-center ${f.tier==="free"? "bg-white text-black border-white" : "bg-white/5 border-white/10 text-white/60"}`}><div><div className="font-black text-[13px]">FREE - Basic listing</div><div className="text-[10px] opacity-60">30 days • Standard rank</div></div><div className="font-black text-[14px]">KES 0</div></button>
-            <button type="button" onClick={()=>setF({...f,tier:"verified"})} className={`h-[72px] rounded-[20px] border text-left px-6 flex justify-between items-center ${f.tier==="verified"? "bg-white text-black border-white" : "bg-white/5 border-white/10 text-white/60"}`}><div><div className="font-black text-[13px]">VERIFIED</div><div className="text-[10px] opacity-60">Badge + top rank</div></div><div className="font-black text-[14px]">KES 4,500</div></button>
-            <button type="button" onClick={()=>setF({...f,tier:"featured"})} className={`h-[84px] rounded-[20px] border text-left px-6 flex justify-between items-center ${f.tier==="featured"? "bg-[#FFD700] text-black border-[#FFD700] shadow-[0_0_30px_rgba(255,215,0,0.2)]" : "bg-white/5 border-white/10 text-white/60"}`}><div><div className="font-black text-[13px] flex items-center gap-2">FEATURED <span className="text-[8px] px-2 py-0.5 rounded-full bg-black text-[#FFD700] tracking-widest">BEST VALUE</span></div><div className="text-[10px] opacity-70">Homepage + ads + Verified</div></div><div className="font-black text-[16px]">KES 9,500</div></button>
+            <button type="button" onClick={()=>{setF({...f,tier:"free"}); setShowPay(false);}} className={`h-[72px] rounded-[20px] border text-left px-6 flex justify-between items-center ${f.tier==="free"? "bg-white text-black border-white" : "bg-white/5 border-white/10 text-white/60"}`}><div><div className="font-black text-[13px]">FREE - Basic listing</div><div className="text-[10px] opacity-60">30 days</div></div><div className="font-black">KES 0</div></button>
+            <button type="button" onClick={()=>{setF({...f,tier:"verified"}); setShowPay(true);}} className={`h-[72px] rounded-[20px] border text-left px-6 flex justify-between items-center ${f.tier==="verified"? "bg-white text-black border-white" : "bg-white/5 border-white/10 text-white/60"}`}><div><div className="font-black text-[13px]">VERIFIED</div><div className="text-[10px] opacity-60">Badge + top rank</div></div><div className="font-black">KES 4,500</div></button>
+            <button type="button" onClick={()=>{setF({...f,tier:"featured"}); setShowPay(true);}} className={`h-[84px] rounded-[20px] border text-left px-6 flex justify-between items-center ${f.tier==="featured"? "bg-[#FFD700] text-black border-[#FFD700]" : "bg-white/5 border-white/10 text-white/60"}`}><div><div className="font-black text-[13px]">FEATURED</div><div className="text-[10px] opacity-70">Homepage + ads + Verified</div></div><div className="font-black">KES 9,500</div></button>
           </div>
-          <div className="pt-2 text-[11px] text-white/30 text-center">M-Pesa Paybill • Lipa na M-Pesa to activate VERIFIED / FEATURED</div>
-          <button disabled={loading} className="w-full h-[56px] rounded-full bg-white text-black font-black tracking-wide">{loading?"Saving to Supabase...":"Create Politician ->"}</button>
+
+          {showPay && f.tier!=="free" && (
+            <div className="rounded-[20px] bg-[#FFD700]/10 border border-[#FFD700]/30 p-5 space-y-3">
+              <div className="font-black text-[13px] text-[#FFD700]">Lipa na M-Pesa - Till Payment</div>
+              <div className="text-[12px] text-white/70 leading-relaxed">
+                1. Go to M-Pesa -> Lipa na M-Pesa -> Buy Goods and Services<br/>
+                2. Enter Till Number: <span className="font-black text-white text-[14px]">YOUR_TILL_HERE</span><br/>
+                3. Amount: <span className="font-black text-white">{f.tier==="verified"?"4,500":"9,500"}</span><br/>
+                4. Enter PIN and send<br/>
+                5. Copy M-Pesa Code (e.g. QGH7... ) and paste below
+              </div>
+              <input required placeholder="Paste M-Pesa Code e.g. QGH7K..." value={f.mpesaCode||""} onChange={e=>setF({...f,mpesaCode:e.target.value.toUpperCase()})} className="w-full h-[56px] px-6 rounded-full bg-black border border-[#FFD700]/30 outline-none text-white font-mono tracking-widest"/>
+              <div className="text-[10px] text-white/40">After payment, admin verifies in 10 mins and your profile goes FEATURED on homepage.</div>
+            </div>
+          )}
+
+          <button disabled={loading} className="w-full h-[56px] rounded-full bg-white text-black font-black">{loading?"Submitting...": showPay && f.tier!=="free"? "Submit Payment Code ->" : "Create Politician ->"}</button>
         </form>
       </div>
     </main>
